@@ -1,0 +1,190 @@
+service: dynamodb-crud-api
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: us-east-1
+  environment:
+    USER_TABLE_NAME: ${self:custom.usersTableName}
+    EVENT_TABLE_NAME: ${self:custom.eventsTableName}
+
+custom:
+  usersTableName: users-table-${self:provider.stage}
+  eventsTableName: events-table-${self:provider.stage}
+
+plugins:
+  - serverless-iam-roles-per-function
+
+functions:
+  createEvent:
+    handler: api.createEvent
+    name: create-event
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: events
+          method: POST
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+        Resource: !GetAtt eventsTable.Arn
+  getAllEvents:
+    handler: api.getAllEvents
+    name: get-all-events
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: events
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:Scan"
+        Resource: !GetAtt eventsTable.Arn
+  getEvent:
+    handler: api.getEvent
+    name: get-event
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: events/{eventId}
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:GetItem"
+        Resource: !GetAtt eventsTable.Arn
+  updateEvent:
+    handler: api.updateEvent
+    name: update-event
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: events/{eventId}
+          method: PUT
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:UpdateItem"
+        Resource: !GetAtt eventsTable.Arn
+  deleteEvent:
+    handler: api.deleteEvent
+    name: delete-event
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: events/{eventId}
+          method: DELETE
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:DeleteItem"
+        Resource: !GetAtt eventsTable.Arn
+
+  createUser:
+    handler: api.createUser
+    name: create-user
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: users
+          method: POST
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+        Resource: !GetAtt usersTable.Arn
+  getAllUsers:
+    handler: api.getAllUsers
+    name: get-all-users
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: users
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:Scan"
+        Resource: !GetAtt usersTable.Arn
+  getUser:
+    handler: api.getUser
+    name: get-user
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: users/{userId}
+          method: GET
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:GetItem"
+        Resource: !GetAtt usersTable.Arn
+  updateUser:
+    handler: api.updateUser
+    name: update-user
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: users/{userId}
+          method: PUT
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:UpdateItem"
+        Resource: !GetAtt usersTable.Arn
+  deleteUser:
+    handler: api.deleteUser
+    name: delete-user
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - http:
+          path: users/{userId}
+          method: DELETE
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:DeleteItem"
+        Resource: !GetAtt usersTable.Arn
+  
+
+resources:
+  Resources:
+    eventsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.postsTableName}
+        AttributeDefinitions:
+          - AttributeName: postId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: postId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.usersTableName}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
