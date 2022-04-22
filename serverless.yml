@@ -1,4 +1,4 @@
-service: dynamodb-crud-api
+service: eventbooking-crud-api
 
 provider:
   name: aws
@@ -165,7 +165,7 @@ resources:
     eventsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.postsTableName}
+        TableName: ${self:custom.eventsTableName}
         AttributeDefinitions:
           - AttributeName: postId
             AttributeType: S
