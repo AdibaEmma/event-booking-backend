@@ -9,16 +9,18 @@ const headers = {
 };
 
 const eventsTable = "EventsTable"
+
 const eventSchema = yup.object().shape({
     title: yup.string().required(),
     description: yup.string().required(),
     artist: yup.number().required(),
-    attendees: yup.array()
+    attendees: yup.array().notRequired(),
 });
 
 const attendeeSchema = yup.object().shape({
-    username: yup.string().required(),
-});
+    username: yup.string().required()
+})
+
 
 class HttpError extends Error {
     constructor(public statusCode: number, body: Record<string, unknown> = {}) {
@@ -27,13 +29,33 @@ class HttpError extends Error {
 }
 
 const handleError = (err: unknown) => {
+    if (err instanceof yup.ValidationError) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({
+                errors: err.errors,
+            }),
+        };
+    }
+
+    if (err instanceof SyntaxError) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: `invalid request body format : "${err.message}"` }),
+        };
+    }
+
     if (err instanceof HttpError) {
         return {
             statusCode: err.statusCode,
-            body: err.message
-        }
+            headers,
+            body: err.message,
+        };
     }
-    throw err
+
+    throw err;
 }
 
 export const createEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -75,7 +97,7 @@ export const bookEvent = async (event: APIGatewayProxyEvent): Promise<APIGateway
 
         const eventItem = {
             ...eventItemToBeUpdated,
-            attendees: [...attendees],
+            attendees: attendees,
             eventId: id
         }
         await ddbClient
