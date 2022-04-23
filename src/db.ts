@@ -1,5 +1,5 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
+import AWS  from "aws-sdk"
 const REGION = "us-east-1"
-const ddbClient = new DynamoDBClient({ region: REGION })
+const ddbClient = new AWS.DynamoDB.DocumentClient({  region: REGION })
 export { ddbClient }
 

@@ -6,159 +6,131 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    USER_TABLE_NAME: ${self:custom.usersTableName}
-    EVENT_TABLE_NAME: ${self:custom.eventsTableName}
+    USER_TABLENAME: ${self:custom.usersTableName}
+    EVENT_TABLENAME: ${self:custom.eventsTableName}
 
 custom:
-  usersTableName: users-table-${self:provider.stage}
-  eventsTableName: events-table-${self:provider.stage}
+  usersTableName: UsersTable
+  eventsTableName: EventsTable
 
 plugins:
-  - serverless-iam-roles-per-function
+  - serverless-plugin-typescript
+
+iam:
+  role:
+    statements:
+      - Effect:
+        Action:
+          - "dynamodb:PutItem"
+          - "dynamodb:GetItem"
+          - "dynamodb:DeleteItem"
+          - "dynamodb:ScanItem"
+          - "dynamodb:UpdateItem"
+        Resource:
+          - {"fn:GetAtt": ["EventsTable", "Arn"]}
+          - {"fn:GetAtt": ["UsersTable", "Arn"]}
 
 functions:
   createEvent:
-    handler: api.createEvent
+    handler: src/handlers.createEvent
     name: create-event
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
-      - http:
-          path: events
+      - httpApi:
+          path: /events/create
           method: POST
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:PutItem"
-        Resource: !GetAtt eventsTable.Arn
+  bookEvent:
+    handler: src/handlers.bookEvent
+    name: book-event
+    memorySize: 128 # mb
+    timeout: 5 # seconds
+    events:
+      - httpApi:
+          path: /events/book
+          method: POST
   getAllEvents:
-    handler: api.getAllEvents
+    handler: src/handlers.getAllEvents
     name: get-all-events
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: events
+          path: /events
           method: GET
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:Scan"
-        Resource: !GetAtt eventsTable.Arn
   getEvent:
-    handler: api.getEvent
+    handler: src/handlers.getEvent
     name: get-event
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: events/{eventId}
+          path: /events/{eventId}
           method: GET
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:GetItem"
-        Resource: !GetAtt eventsTable.Arn
   updateEvent:
-    handler: api.updateEvent
+    handler: src/handlers.updateEvent
     name: update-event
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: events/{eventId}
+          path: /events/{eventId}
           method: PUT
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:UpdateItem"
-        Resource: !GetAtt eventsTable.Arn
   deleteEvent:
-    handler: api.deleteEvent
+    handler: src/handlers.deleteEvent
     name: delete-event
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: events/{eventId}
+          path: /events/{eventId}
           method: DELETE
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:DeleteItem"
-        Resource: !GetAtt eventsTable.Arn
 
   createUser:
-    handler: api.createUser
+    handler: src/handlers.createUser
     name: create-user
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: users
+          path: /users
           method: POST
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:PutItem"
-        Resource: !GetAtt usersTable.Arn
   getAllUsers:
-    handler: api.getAllUsers
+    handler: src/handlers.getAllUsers
     name: get-all-users
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: users
+          path: /users
           method: GET
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:Scan"
-        Resource: !GetAtt usersTable.Arn
   getUser:
-    handler: api.getUser
+    handler: src/handlers.getUser
     name: get-user
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: users/{userId}
+          path: /users/{userId}
           method: GET
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:GetItem"
-        Resource: !GetAtt usersTable.Arn
   updateUser:
-    handler: api.updateUser
+    handler: src/handlers.updateUser
     name: update-user
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: users/{userId}
+          path: /users/{userId}
           method: PUT
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:UpdateItem"
-        Resource: !GetAtt usersTable.Arn
   deleteUser:
-    handler: api.deleteUser
+    handler: src/handlers.deleteUser
     name: delete-user
     memorySize: 128 # mb
     timeout: 5 # seconds
     events:
       - http:
-          path: users/{userId}
+          path: /users/{userId}
           method: DELETE
-    iamRoleStatements:
-      - Effect: "Allow"
-        Action:
-          - "dynamodb:DeleteItem"
-        Resource: !GetAtt usersTable.Arn
-  
 
 resources:
   Resources:
