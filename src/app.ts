@@ -1,1 +1,0 @@
-import { ddbClient } from './db'

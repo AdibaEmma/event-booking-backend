@@ -1,3 +1,5 @@
+org: aweperi
+app: eventbooking-crud-api
 service: eventbooking-crud-api
 
 provider:
@@ -5,37 +7,25 @@ provider:
   runtime: nodejs14.x
   stage: dev
   region: us-east-1
-  environment:
-    USER_TABLENAME: ${self:custom.usersTableName}
-    EVENT_TABLENAME: ${self:custom.eventsTableName}
 
-custom:
-  usersTableName: UsersTable
-  eventsTableName: EventsTable
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:ScanItem"
+          Resource:
+            - {"Fn::GetAtt": ["EventsTable", "Arn"]}
+            - {"Fn::GetAtt": ["UsersTable", "Arn"]}
 
-plugins:
-  - serverless-plugin-typescript
-
-iam:
-  role:
-    statements:
-      - Effect:
-        Action:
-          - "dynamodb:PutItem"
-          - "dynamodb:GetItem"
-          - "dynamodb:DeleteItem"
-          - "dynamodb:ScanItem"
-          - "dynamodb:UpdateItem"
-        Resource:
-          - {"fn:GetAtt": ["EventsTable", "Arn"]}
-          - {"fn:GetAtt": ["UsersTable", "Arn"]}
 
 functions:
   createEvent:
     handler: src/handlers.createEvent
     name: create-event
-    memorySize: 128 # mb
-    timeout: 5 # seconds
     events:
       - httpApi:
           path: /events/create
@@ -43,114 +33,115 @@ functions:
   bookEvent:
     handler: src/handlers.bookEvent
     name: book-event
-    memorySize: 128 # mb
-    timeout: 5 # seconds
     events:
       - httpApi:
-          path: /events/book
+          path: /events/{eventId}/book
           method: POST
-  getAllEvents:
-    handler: src/handlers.getAllEvents
-    name: get-all-events
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /events
-          method: GET
-  getEvent:
-    handler: src/handlers.getEvent
-    name: get-event
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /events/{eventId}
-          method: GET
-  updateEvent:
-    handler: src/handlers.updateEvent
-    name: update-event
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /events/{eventId}
-          method: PUT
-  deleteEvent:
-    handler: src/handlers.deleteEvent
-    name: delete-event
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /events/{eventId}
-          method: DELETE
+#   getAllEvents:
+#     handler: src/handlers.getAllEvents
+#     name: get-all-events
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /events
+#           method: GET
+#   getEvent:
+#     handler: src/handlers.getEvent
+#     name: get-event
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /events/{eventId}
+#           method: GET
+#   updateEvent:
+#     handler: src/handlers.updateEvent
+#     name: update-event
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /events/{eventId}
+#           method: PUT
+#   deleteEvent:
+#     handler: src/handlers.deleteEvent
+#     name: delete-event
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /events/{eventId}
+#           method: DELETE
 
-  createUser:
-    handler: src/handlers.createUser
-    name: create-user
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /users
-          method: POST
-  getAllUsers:
-    handler: src/handlers.getAllUsers
-    name: get-all-users
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /users
-          method: GET
-  getUser:
-    handler: src/handlers.getUser
-    name: get-user
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /users/{userId}
-          method: GET
-  updateUser:
-    handler: src/handlers.updateUser
-    name: update-user
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /users/{userId}
-          method: PUT
-  deleteUser:
-    handler: src/handlers.deleteUser
-    name: delete-user
-    memorySize: 128 # mb
-    timeout: 5 # seconds
-    events:
-      - http:
-          path: /users/{userId}
-          method: DELETE
+#   createUser:
+#     handler: src/handlers.createUser
+#     name: create-user
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /users
+#           method: POST
+#   getAllUsers:
+#     handler: src/handlers.getAllUsers
+#     name: get-all-users
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /users
+#           method: GET
+#   getUser:
+#     handler: src/handlers.getUser
+#     name: get-user
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /users/{userId}
+#           method: GET
+#   updateUser:
+#     handler: src/handlers.updateUser
+#     name: update-user
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /users/{userId}
+#           method: PUT
+#   deleteUser:
+#     handler: src/handlers.deleteUser
+#     name: delete-user
+#     memorySize: 128 # mb
+#     timeout: 5 # seconds
+#     events:
+#       - http:
+#           path: /users/{userId}
+#           method: DELETE
+
+plugins:
+  - serverless-plugin-typescript
 
 resources:
   Resources:
-    eventsTable:
+    EventsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.eventsTableName}
+        TableName: EventsTable
         AttributeDefinitions:
-          - AttributeName: postId
+          - AttributeName: eventId
             AttributeType: S
         KeySchema:
-          - AttributeName: postId
+          - AttributeName: eventId
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    usersTable:
+    UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.usersTableName}
+        TableName: UsersTable
         AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
@@ -160,3 +151,21 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:provider.stage}-user-pool
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:provider.stage}-user-pool-client
+        UserPoolId: 
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+        GenerateSecret: false

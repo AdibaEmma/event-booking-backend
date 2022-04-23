@@ -1,70 +1,113 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 } from "uuid";
+import * as yup from "yup";
+
 import { ddbClient } from "./db";
 
+const headers = {
+    "content-type": "application/json",
+};
 
 const eventsTable = "EventsTable"
-export const createEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const reqBody = JSON.parse(event.body as string);
-    const eventItem = {
-        eventId: v4(),
-        ...reqBody,
+const eventSchema = yup.object().shape({
+    title: yup.string().required(),
+    description: yup.string().required(),
+    artist: yup.number().required(),
+    attendees: yup.array()
+});
+
+const attendeeSchema = yup.object().shape({
+    username: yup.string().required(),
+});
+
+class HttpError extends Error {
+    constructor(public statusCode: number, body: Record<string, unknown> = {}) {
+        super(JSON.stringify(body))
     }
-    await ddbClient
-        .put({
-            TableName: eventsTable,
-            Item: eventItem,
-        })
-        .promise();
-    return {
-        statusCode: 201,
-        body: JSON.stringify(eventItem),
-    };
+}
+
+const handleError = (err: unknown) => {
+    if (err instanceof HttpError) {
+        return {
+            statusCode: err.statusCode,
+            body: err.message
+        }
+    }
+    throw err
+}
+
+export const createEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const reqBody = JSON.parse(event.body as string);
+
+        await eventSchema.validate(reqBody, { abortEarly: false });
+
+        const eventItem = {
+            eventId: v4(),
+            ...reqBody,
+        }
+        await ddbClient
+            .put({
+                TableName: eventsTable,
+                Item: eventItem,
+            })
+            .promise();
+        return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify(eventItem),
+        };
+    } catch (err) {
+        throw err
+    }
 };
 
 export const bookEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const eventId = event.pathParameters?.id
-    const userId = event.queryStringParameters?.userId
- 
-    const eventToBook = await ddbClient.get({
-        TableName: eventsTable,
-        Key: {
-            eventId: eventId
-        },
-    })
-        .promise();
+    try {
+        const id = event.pathParameters?.eventId as string
+        const reqBody = JSON.parse(event.body as string);
+        let attendees = []
 
-    if(!eventToBook) {
-        return {
-            statusCode: 404,
-            body:JSON.stringify({ error: `event with id: ${eventId} not found`})
+        await attendeeSchema.validate(reqBody, { abortEarly: false });
+
+        const eventItemToBeUpdated = fetchProductById(id)
+        attendees.push(reqBody)
+
+        const eventItem = {
+            ...eventItemToBeUpdated,
+            attendees: [...attendees],
+            eventId: id
         }
+        await ddbClient
+            .put({
+                TableName: eventsTable,
+                Item: eventItem,
+            })
+            .promise();
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(eventItem),
+        }
+    } catch (err) {
+        return handleError(err)
     }
-    return {
-        statusCode: 200,
-        body: JSON.stringify(eventToBook),
-    };
 };
 
-export const getEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const eventId = event.pathParameters?.id
-   
-    const eventItem = await ddbClient.get({
-        TableName: eventsTable,
-        Key: {
-            eventId: eventId
-        },
-    })
+const fetchProductById = async (id: string) => {
+    const output = await ddbClient
+        .get({
+            TableName: eventsTable,
+            Key: {
+                productID: id,
+            },
+        })
         .promise();
 
-    if (!eventItem) {
-        return {
-            statusCode: 404,
-            body: JSON.stringify({ error: `event with id: ${eventId} not found` })
-        }
+    if (!output.Item) {
+        throw new HttpError(404, { error: "not found" });
     }
-    return {
-        statusCode: 200,
-        body: JSON.stringify(eventItem.Item),
-    };
+
+    return output.Item;
 };
