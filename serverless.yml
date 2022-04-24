@@ -37,42 +37,34 @@ functions:
       - httpApi:
           path: /events/{eventId}/book
           method: POST
-#   getAllEvents:
-#     handler: src/handlers.getAllEvents
-#     name: get-all-events
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /events
-#           method: GET
-#   getEvent:
-#     handler: src/handlers.getEvent
-#     name: get-event
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /events/{eventId}
-#           method: GET
-#   updateEvent:
-#     handler: src/handlers.updateEvent
-#     name: update-event
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /events/{eventId}
-#           method: PUT
-#   deleteEvent:
-#     handler: src/handlers.deleteEvent
-#     name: delete-event
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /events/{eventId}
-#           method: DELETE
+  getAllEvents:
+    handler: src/handlers.getAllEvents
+    name: get-all-events
+    events:
+      - http:
+          path: /events
+          method: GET
+  getEvent:
+    handler: src/handlers.getEvent
+    name: get-event
+    events:
+      - http:
+          path: /events/{eventId}
+          method: GET
+  updateEvent:
+    handler: src/handlers.updateEvent
+    name: update-event
+    events:
+      - http:
+          path: /events/{eventId}
+          method: PUT
+  deleteEvent:
+    handler: src/handlers.deleteEvent
+    name: delete-event
+    events:
+      - http:
+          path: /events/{eventId}
+          method: DELETE
 
 #   createUser:
 #     handler: src/handlers.createUser

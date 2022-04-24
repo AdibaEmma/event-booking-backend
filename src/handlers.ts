@@ -13,14 +13,145 @@ const eventsTable = "EventsTable"
 const eventSchema = yup.object().shape({
     title: yup.string().required(),
     description: yup.string().required(),
-    artist: yup.number().required(),
-    attendees: yup.array().notRequired(),
+    artist: yup.string().required(),
+    attendees: yup.array().notRequired()
 });
 
 const attendeeSchema = yup.object().shape({
     username: yup.string().required()
 })
 
+export const createEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const reqBody = JSON.parse(event.body as string);
+
+        await eventSchema.validate(reqBody, { abortEarly: false });
+
+        const eventItem = {
+            eventId: v4(),
+            ...reqBody,
+        }
+        await ddbClient
+            .put({
+                TableName: eventsTable,
+                Item: eventItem,
+            })
+            .promise();
+        return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify(eventItem),
+        };
+    } catch (err) {
+        return handleError(err)
+    }
+};
+
+export const bookEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        let attendees = []
+
+        const id = event.pathParameters?.eventId as string
+
+        const updateBody = await fetchProductById(id)
+
+        const reqBody = JSON.parse(event.body as string);
+
+        await attendeeSchema.validate(reqBody, { abortEarly: false });
+
+        attendees.push(reqBody)
+
+        const eventItem = {
+            ...updateBody,
+            attendees: [...attendees],
+            eventId: id
+        }
+        await ddbClient
+            .put({
+                TableName: eventsTable,
+                Item: eventItem,
+            })
+            .promise();
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(eventItem),
+        }
+    } catch (err) {
+        return handleError(err)
+    }
+};
+
+export const getAllEvents = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const output = await ddbClient
+        .scan({
+            TableName: eventsTable,
+        })
+        .promise();
+
+    return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(output.Items),
+    };
+};
+
+export const getEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const eventItem = await fetchProductById(event.pathParameters?.eventId as string);
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(eventItem),
+        };
+    } catch (e) {
+        return handleError(e);
+    }
+};
+
+
+export const deleteEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const id = event.pathParameters?.eventId as string;
+
+        await fetchProductById(id);
+
+        await ddbClient
+            .delete({
+                TableName: eventsTable,
+                Key: {
+                    eventId: id,
+                },
+            })
+            .promise();
+
+        return {
+            statusCode: 204,
+            body: "",
+        };
+    } catch (e) {
+        return handleError(e);
+    }
+};
+
+const fetchProductById = async (id: string) => {
+    const output = await ddbClient
+        .get({
+            TableName: eventsTable,
+            Key: {
+                eventId: id,
+            },
+        })
+        .promise();
+
+    if (!output.Item) {
+        throw new HttpError(404, { error: "not found" });
+    }
+
+    return output.Item;
+};
 
 class HttpError extends Error {
     constructor(public statusCode: number, body: Record<string, unknown> = {}) {
@@ -57,79 +188,3 @@ const handleError = (err: unknown) => {
 
     throw err;
 }
-
-export const createEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    try {
-        const reqBody = JSON.parse(event.body as string);
-
-        await eventSchema.validate(reqBody, { abortEarly: false });
-
-        const eventItem = {
-            eventId: v4(),
-            ...reqBody,
-        }
-        await ddbClient
-            .put({
-                TableName: eventsTable,
-                Item: eventItem,
-            })
-            .promise();
-        return {
-            statusCode: 201,
-            headers,
-            body: JSON.stringify(eventItem),
-        };
-    } catch (err) {
-        throw err
-    }
-};
-
-export const bookEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    try {
-        const id = event.pathParameters?.eventId as string
-        const reqBody = JSON.parse(event.body as string);
-        let attendees = []
-
-        await attendeeSchema.validate(reqBody, { abortEarly: false });
-
-        const eventItemToBeUpdated = fetchProductById(id)
-        attendees.push(reqBody)
-
-        const eventItem = {
-            ...eventItemToBeUpdated,
-            attendees: attendees,
-            eventId: id
-        }
-        await ddbClient
-            .put({
-                TableName: eventsTable,
-                Item: eventItem,
-            })
-            .promise();
-
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify(eventItem),
-        }
-    } catch (err) {
-        return handleError(err)
-    }
-};
-
-const fetchProductById = async (id: string) => {
-    const output = await ddbClient
-        .get({
-            TableName: eventsTable,
-            Key: {
-                productID: id,
-            },
-        })
-        .promise();
-
-    if (!output.Item) {
-        throw new HttpError(404, { error: "not found" });
-    }
-
-    return output.Item;
-};

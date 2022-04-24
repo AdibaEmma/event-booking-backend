@@ -124,6 +124,30 @@
               "LogGroupName": "/aws/lambda/book-event"
             }
           },
+          "GetAllEventsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/get-all-events"
+            }
+          },
+          "GetEventLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/get-event"
+            }
+          },
+          "UpdateEventLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/update-event"
+            }
+          },
+          "DeleteEventLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/delete-event"
+            }
+          },
           "IamRoleLambdaExecution": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -170,6 +194,18 @@
                           },
                           {
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/book-event:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-all-events:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-event:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/update-event:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/delete-event:*"
                           }
                         ]
                       },
@@ -184,6 +220,18 @@
                           },
                           {
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/book-event:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-all-events:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/get-event:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/update-event:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/delete-event:*:*"
                           }
                         ]
                       },
@@ -253,6 +301,30 @@
                               "BookEventLogGroup",
                               "Arn"
                             ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "GetAllEventsLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "GetEventLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "UpdateEventLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "DeleteEventLogGroup",
+                              "Arn"
+                            ]
                           }
                         ]
                       }
@@ -269,7 +341,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/eventbooking-crud-api/dev/1650757666086-2022-04-23T23:47:46.086Z/eventbooking-crud-api.zip"
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/eventbooking-crud-api.zip"
               },
               "Handler": "s_createEvent.handler",
               "Runtime": "nodejs14.x",
@@ -294,7 +366,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/eventbooking-crud-api/dev/1650757666086-2022-04-23T23:47:46.086Z/eventbooking-crud-api.zip"
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/eventbooking-crud-api.zip"
               },
               "Handler": "s_bookEvent.handler",
               "Runtime": "nodejs14.x",
@@ -312,25 +384,678 @@
               "BookEventLogGroup"
             ]
           },
-          "CreateEventLambdaVersion1tyFwZ9DjgSFJilP0b3S8OHdtW3FKk1PF1ssOYmjdY": {
+          "GetAllEventsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/eventbooking-crud-api.zip"
+              },
+              "Handler": "s_getAllEvents.handler",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "get-all-events",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetAllEventsLogGroup"
+            ]
+          },
+          "GetEventLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/eventbooking-crud-api.zip"
+              },
+              "Handler": "s_getEvent.handler",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "get-event",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetEventLogGroup"
+            ]
+          },
+          "UpdateEventLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/eventbooking-crud-api.zip"
+              },
+              "Handler": "s_updateEvent.handler",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "update-event",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UpdateEventLogGroup"
+            ]
+          },
+          "DeleteEventLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/eventbooking-crud-api.zip"
+              },
+              "Handler": "s_deleteEvent.handler",
+              "Runtime": "nodejs14.x",
+              "FunctionName": "delete-event",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "DeleteEventLogGroup"
+            ]
+          },
+          "CreateEventLambdaVersionkIH3ksUK51Z88FDPzse0HKcQI30mRyDauyx5vJKbUU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CreateEventLambdaFunction"
               },
-              "CodeSha256": "R/1cv4yWHoAaoroS8pUi3/pc5GxcQQ+dNlXB5WQaGQA="
+              "CodeSha256": "EYT1n9ERaLJq0c/nM4giO++qlt9X9kHzJawKW9Vd6o4="
             }
           },
-          "BookEventLambdaVersionVnzpHZoiOgTzJNQEOLDfc2mQQyaoQghf1NKeYdk8": {
+          "BookEventLambdaVersion71dWMM7bqNTaYFF5dueT5RuU5h3ENGtByGecepJ0aM": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "BookEventLambdaFunction"
               },
-              "CodeSha256": "R/1cv4yWHoAaoroS8pUi3/pc5GxcQQ+dNlXB5WQaGQA="
+              "CodeSha256": "EYT1n9ERaLJq0c/nM4giO++qlt9X9kHzJawKW9Vd6o4="
             }
+          },
+          "GetAllEventsLambdaVersion8n1FILnyoZlqhJrKJfxoMWT9PPiYepte9jqa28m6Pk": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetAllEventsLambdaFunction"
+              },
+              "CodeSha256": "EYT1n9ERaLJq0c/nM4giO++qlt9X9kHzJawKW9Vd6o4="
+            }
+          },
+          "GetEventLambdaVersionJpsPsB9xuKCmg6tsKXMKIlMCUUGGzDtvJoq6l6HKvY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetEventLambdaFunction"
+              },
+              "CodeSha256": "EYT1n9ERaLJq0c/nM4giO++qlt9X9kHzJawKW9Vd6o4="
+            }
+          },
+          "UpdateEventLambdaVersionhMZvEqRspwGHCxrKQX14EUqqPhXI7nGzV5PyCgTdUJc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UpdateEventLambdaFunction"
+              },
+              "CodeSha256": "EYT1n9ERaLJq0c/nM4giO++qlt9X9kHzJawKW9Vd6o4="
+            }
+          },
+          "DeleteEventLambdaVersionLMR6vQp56DRU6a0mhUr2GCWoZKKE51aZMbP4BR05o": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeleteEventLambdaFunction"
+              },
+              "CodeSha256": "EYT1n9ERaLJq0c/nM4giO++qlt9X9kHzJawKW9Vd6o4="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "dev-eventbooking-crud-api",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              },
+              "Policy": ""
+            }
+          },
+          "ApiGatewayResourceEvents": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "events",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceEventsEventidVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceEvents"
+              },
+              "PathPart": "{eventId}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodEventsGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEvents"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetAllEventsLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetAllEventsLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodEventsEventidVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEventsEventidVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetEventLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetEventLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodEventsEventidVarPut": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "PUT",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEventsEventidVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "UpdateEventLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "UpdateEventLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodEventsEventidVarDelete": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "DELETE",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEventsEventidVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DeleteEventLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "DeleteEventLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayDeployment1650764610016": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodEventsGet",
+              "ApiGatewayMethodEventsEventidVarGet",
+              "ApiGatewayMethodEventsEventidVarPut",
+              "ApiGatewayMethodEventsEventidVarDelete"
+            ]
+          },
+          "GetAllEventsLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetAllEventsLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetEventLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetEventLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "UpdateEventLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "UpdateEventLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DeleteEventLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DeleteEventLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "ApiGatewayLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/api-gateway/eventbooking-crud-api-dev"
+            }
+          },
+          "CustomApiGatewayAccountCloudWatchRole": {
+            "Type": "Custom::ApiGatewayAccountRole",
+            "Version": 1,
+            "Properties": {
+              "ServiceToken": {
+                "Fn::GetAtt": [
+                  "CustomDashresourceDashapigwDashcwDashroleLambdaFunction",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "IamRoleCustomResourcesLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "eventbooking-crud-api",
+                        "custom-resources-lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Resource": {
+                          "Fn::Join": [
+                            ":",
+                            [
+                              "arn",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "iam:",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              "role/*"
+                            ]
+                          ]
+                        },
+                        "Action": [
+                          "iam:AttachRolePolicy",
+                          "iam:CreateRole",
+                          "iam:ListAttachedRolePolicies",
+                          "iam:PassRole"
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Resource": {
+                          "Fn::Join": [
+                            ":",
+                            [
+                              "arn",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "apigateway:*::/account"
+                            ]
+                          ]
+                        },
+                        "Action": [
+                          "apigateway:GET",
+                          "apigateway:PATCH"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "CustomDashresourceDashapigwDashcwDashroleLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z/custom-resources.zip"
+              },
+              "FunctionName": "eventbooking-crud-api-dev-custom-resource-apigw-cw-role",
+              "Handler": "api-gateway-cloud-watch-role/handler.handler",
+              "MemorySize": 1024,
+              "Runtime": "nodejs14.x",
+              "Timeout": 180,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleCustomResourcesLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "IamRoleCustomResourcesLambdaExecution"
+            ]
           },
           "HttpApi": {
             "Type": "AWS::ApiGatewayV2::Api",
@@ -601,6 +1326,56 @@
               }
             }
           },
+          "CWLSubFilterGetAllEventsLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:34951f94-8db2-4703-b8f3-027560ebcbd1#3kr479y3nCSf2LBXqw#eventbooking-crud-api#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "GetAllEventsLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterGetEventLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:34951f94-8db2-4703-b8f3-027560ebcbd1#3kr479y3nCSf2LBXqw#eventbooking-crud-api#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "GetEventLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterUpdateEventLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:34951f94-8db2-4703-b8f3-027560ebcbd1#3kr479y3nCSf2LBXqw#eventbooking-crud-api#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "UpdateEventLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterDeleteEventLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:34951f94-8db2-4703-b8f3-027560ebcbd1#3kr479y3nCSf2LBXqw#eventbooking-crud-api#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "DeleteEventLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterApiGatewayLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:34951f94-8db2-4703-b8f3-027560ebcbd1#3kr479y3nCSf2LBXqw#eventbooking-crud-api#dev",
+              "FilterPattern": "\"SLS_ACCESS_LOG\"",
+              "LogGroupName": {
+                "Ref": "ApiGatewayLogGroup"
+              }
+            }
+          },
           "CWLSubFilterHttpApiLogGroupUsEast1": {
             "Type": "AWS::Logs::SubscriptionFilter",
             "Properties": {
@@ -635,7 +1410,7 @@
           "CreateEventLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CreateEventLambdaVersion1tyFwZ9DjgSFJilP0b3S8OHdtW3FKk1PF1ssOYmjdY"
+              "Ref": "CreateEventLambdaVersionkIH3ksUK51Z88FDPzse0HKcQI30mRyDauyx5vJKbUU"
             },
             "Export": {
               "Name": "sls-eventbooking-crud-api-dev-CreateEventLambdaFunctionQualifiedArn"
@@ -644,10 +1419,72 @@
           "BookEventLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "BookEventLambdaVersionVnzpHZoiOgTzJNQEOLDfc2mQQyaoQghf1NKeYdk8"
+              "Ref": "BookEventLambdaVersion71dWMM7bqNTaYFF5dueT5RuU5h3ENGtByGecepJ0aM"
             },
             "Export": {
               "Name": "sls-eventbooking-crud-api-dev-BookEventLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetAllEventsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetAllEventsLambdaVersion8n1FILnyoZlqhJrKJfxoMWT9PPiYepte9jqa28m6Pk"
+            },
+            "Export": {
+              "Name": "sls-eventbooking-crud-api-dev-GetAllEventsLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetEventLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetEventLambdaVersionJpsPsB9xuKCmg6tsKXMKIlMCUUGGzDtvJoq6l6HKvY"
+            },
+            "Export": {
+              "Name": "sls-eventbooking-crud-api-dev-GetEventLambdaFunctionQualifiedArn"
+            }
+          },
+          "UpdateEventLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UpdateEventLambdaVersionhMZvEqRspwGHCxrKQX14EUqqPhXI7nGzV5PyCgTdUJc"
+            },
+            "Export": {
+              "Name": "sls-eventbooking-crud-api-dev-UpdateEventLambdaFunctionQualifiedArn"
+            }
+          },
+          "DeleteEventLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DeleteEventLambdaVersionLMR6vQp56DRU6a0mhUr2GCWoZKKE51aZMbP4BR05o"
+            },
+            "Export": {
+              "Name": "sls-eventbooking-crud-api-dev-DeleteEventLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-eventbooking-crud-api-dev-ServiceEndpoint"
             }
           },
           "HttpApiId": {
@@ -769,6 +1606,9 @@
         }
       },
       "logs": {
+        "restApi": {
+          "format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"apiId\":\"$context.apiId\",\"resourceId\":\"$context.resourceId\",\"resourcePath\":\"$context.resourcePath\",\"path\":\"$context.path\",\"httpMethod\":\"$context.httpMethod\",\"status\":\"$context.status\",\"authLatency\":\"$context.authorizer.integrationLatency\",\"integrationLatency\":\"$context.integrationLatency\",\"integrationStatus\":\"$context.integrationStatus\",\"responseLatency\":\"$context.responseLatency\",\"responseLength\":\"$context.responseLength\",\"errorMessage\":\"$context.error.message\",\"format\":\"SLS_ACCESS_LOG\",\"version\":\"1.0.0\"}"
+        },
         "httpApi": {
           "format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"apiId\":\"$context.apiId\",\"resourcePath\":\"$context.routeKey\",\"path\":\"$context.path\",\"httpMethod\":\"$context.httpMethod\",\"stage\":\"$context.stage\",\"status\":\"$context.status\",\"integrationStatus\":\"$context.integrationStatus\",\"integrationLatency\":\"$context.integrationLatency\",\"responseLatency\":\"$context.responseLatency\",\"responseLength\":\"$context.responseLength\",\"errorMessage\":\"$context.error.message\",\"format\":\"SLS_HTTP_API_LOG\",\"version\":\"1.0.0\"}"
         }
@@ -804,7 +1644,7 @@
         "timeout": 6,
         "runtime": "nodejs14.x",
         "vpc": {},
-        "versionLogicalId": "CreateEventLambdaVersion1tyFwZ9DjgSFJilP0b3S8OHdtW3FKk1PF1ssOYmjdY"
+        "versionLogicalId": "CreateEventLambdaVersionkIH3ksUK51Z88FDPzse0HKcQI30mRyDauyx5vJKbUU"
       },
       "bookEvent": {
         "handler": "s_bookEvent.handler",
@@ -830,7 +1670,107 @@
         "timeout": 6,
         "runtime": "nodejs14.x",
         "vpc": {},
-        "versionLogicalId": "BookEventLambdaVersionVnzpHZoiOgTzJNQEOLDfc2mQQyaoQghf1NKeYdk8"
+        "versionLogicalId": "BookEventLambdaVersion71dWMM7bqNTaYFF5dueT5RuU5h3ENGtByGecepJ0aM"
+      },
+      "getAllEvents": {
+        "handler": "s_getAllEvents.handler",
+        "name": "get-all-events",
+        "events": [
+          {
+            "http": {
+              "path": "events",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "package": {
+          "exclude": [
+            "node_modules/serverless-plugin-typescript"
+          ],
+          "include": [],
+          "patterns": []
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetAllEventsLambdaVersion8n1FILnyoZlqhJrKJfxoMWT9PPiYepte9jqa28m6Pk"
+      },
+      "getEvent": {
+        "handler": "s_getEvent.handler",
+        "name": "get-event",
+        "events": [
+          {
+            "http": {
+              "path": "events/{eventId}",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "package": {
+          "exclude": [
+            "node_modules/serverless-plugin-typescript"
+          ],
+          "include": [],
+          "patterns": []
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "GetEventLambdaVersionJpsPsB9xuKCmg6tsKXMKIlMCUUGGzDtvJoq6l6HKvY"
+      },
+      "updateEvent": {
+        "handler": "s_updateEvent.handler",
+        "name": "update-event",
+        "events": [
+          {
+            "http": {
+              "path": "events/{eventId}",
+              "method": "put",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "package": {
+          "exclude": [
+            "node_modules/serverless-plugin-typescript"
+          ],
+          "include": [],
+          "patterns": []
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "UpdateEventLambdaVersionhMZvEqRspwGHCxrKQX14EUqqPhXI7nGzV5PyCgTdUJc"
+      },
+      "deleteEvent": {
+        "handler": "s_deleteEvent.handler",
+        "name": "delete-event",
+        "events": [
+          {
+            "http": {
+              "path": "events/{eventId}",
+              "method": "delete",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "package": {
+          "exclude": [
+            "node_modules/serverless-plugin-typescript"
+          ],
+          "include": [],
+          "patterns": []
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs14.x",
+        "vpc": {},
+        "versionLogicalId": "DeleteEventLambdaVersionLMR6vQp56DRU6a0mhUr2GCWoZKKE51aZMbP4BR05o"
       }
     },
     "resources": {
@@ -936,7 +1876,7 @@
     "artifact": "C:\\Users\\User\\Documents\\Emma\\event-booking-backend\\.build\\.serverless\\eventbooking-crud-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/eventbooking-crud-api/dev/1650757666086-2022-04-23T23:47:46.086Z",
+    "artifactDirectoryName": "serverless/eventbooking-crud-api/dev/1650764657234-2022-04-24T01:44:17.234Z",
     "artifact": "eventbooking-crud-api.zip"
   }
 }
