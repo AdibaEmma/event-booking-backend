@@ -147,7 +147,7 @@ resources:
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: ${self:provider.stage}-user-pool
+        UserPoolName: EventBookingCrud
         UsernameAttributes:
           - email
         AutoVerifiedAttributes:
@@ -155,9 +155,9 @@ resources:
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
-        ClientName: ${self:provider.stage}-user-pool-client
-        UserPoolId: 
-          Ref: CognitoUserPool
+        ClientName: event-booking-api
+        UserPoolId: us-east-1_JlUXhukul
         ExplicitAuthFlows:
-          - ADMIN_NO_SRP_AUTH
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_USER_SRP_AUTH
         GenerateSecret: false
