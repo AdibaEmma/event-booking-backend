@@ -6,21 +6,21 @@ import fetch from 'node-fetch';
 let pems: { [key: string]: any } = {}
 
 class AuthMiddleware {
-    private poolRegion: string = 'ca-central-1';
-    private userPoolId: string = 'ca-central-1_ef5bKns1b';
+    private poolRegion: string = 'us-east-1';
+    private userPoolId: string = 'us-east-1_JlUXhukul';
 
     constructor() {
         this.setUp()
     }
 
-    private verifyToken(req: Request, resp: Response, next: NextFunction): void {
+    public verifyToken(req: Request, res: Response, next: NextFunction): void {
         const { token } = req.body;
         console.log(token)
-        if (!token) return resp.status(401).end();
+        if (!token) res.status(401).end();
 
         let decodedJwt: any = jwt.decode(token, { complete: true });
         if (decodedJwt === null) {
-            resp.status(401).end()
+            res.status(401).end()
             return
         }
         console.log(decodedJwt)
@@ -28,12 +28,12 @@ class AuthMiddleware {
         let pem = pems[kid];
         console.log(pem)
         if (!pem) {
-            resp.status(401).end()
+            res.status(401).end()
             return
         }
         jwt.verify(token, pem, function (err: any, payload: any) {
             if (err) {
-                resp.status(401).end()
+                res.status(401).end()
                 return
             } else {
                 next()

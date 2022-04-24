@@ -11,12 +11,13 @@
     "lib": ["es2017"],
     "strict": true,
     "module": "commonjs",
+    "incremental": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
   },
   "include": [
-    "**/*"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",

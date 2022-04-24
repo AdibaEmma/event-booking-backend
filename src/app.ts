@@ -1,0 +1,52 @@
+import express from 'express'
+import { Application } from 'express'
+
+import EventController from './controllers/events.controller'
+import AuthController from './controllers/auth.controller'
+import ProtectedController from './controllers/protected.controller';
+
+class App {
+    public app: Application
+    public port: number
+
+    constructor(appInit: { port: number; middleWares: any; controllers: any; }) {
+        this.app = express()
+        this.port = appInit.port
+
+        this.middlewares(appInit.middleWares)
+        this.routes(appInit.controllers)
+    }
+
+    private middlewares(middleWares: { forEach: (arg0: (middleWare: any) => void) => void; }) {
+        middleWares.forEach(middleWare => {
+            this.app.use(middleWare)
+        })
+    }
+
+    private routes(controllers: { forEach: (arg0: (controller: any) => void) => void; }) {
+        controllers.forEach(controller => {
+            this.app.use(controller.path, controller.router)
+        })
+    }
+
+    public listen() {
+        this.app.listen(this.port, () => {
+            console.log(`App listening on the http://localhost:${this.port}`)
+        })
+    }
+}
+
+const app = new App({
+    port: 5000,
+    controllers: [
+        new EventController(),
+        new AuthController(),
+        new ProtectedController()
+    ],
+    middleWares: [
+        express.json(),
+        express.urlencoded({ extended: true }),
+    ]
+})
+
+app.listen()

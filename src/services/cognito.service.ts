@@ -4,10 +4,10 @@ import crypto from 'crypto'
 export default class Cognito {
     private config = {
         apiVersion: '2016-04-18',
-        region: 'ca-central-1',
+        region: 'us-east-1',
     }
-    private secretHash = '10j74r0nsekujafhd777t01omagltb34m16mvrb8e3v6rfop7ud3'
-    private clientId = '7lkobomofk4vsi2iktb0mdmaeq';
+    private secretHash = '92v3gniev4d5jf0abh48jb1afivgqee4c492e3ij5r09hmofqfd'
+    private clientId = '6938p792f8jm7qrbuqhj8stchi';
 
     private cognitoIdentity;
 
@@ -74,7 +74,7 @@ export default class Cognito {
         }
     }
 
-    public async forgotPassword(username): Promise<boolean> {
+    public async forgotPassword(username: string): Promise<boolean> {
         var params = {
             ClientId: this.clientId, /* required */
             Username: username, /* required */

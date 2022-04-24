@@ -1,22 +1,28 @@
+import { Validation } from 'aws-sdk/clients/route53resolver';
 import * as express from 'express'
 import { Request, Response } from 'express'
-import { body, validationResult } from 'express-validator';
+import { body, ValidationChain, validationResult } from 'express-validator';
 import Cognito from '../services/cognito.service';
 
+enum UserType {
+    FAN = "fan",
+    ARTIST = "artist"
+}
 class AuthController {
-    public path = '/auth'
-    public router = express.Router()
+    private path = '/auth'
+    private router = express.Router()
+
 
     constructor() {
         this.initRoutes()
     }
 
     public initRoutes() {
-        this.router.post('/signup', this.validateBody('signUp'), this.signUp)
-        this.router.post('/signin', this.validateBody('signIn'), this.signIn)
-        this.router.post('/verify', this.validateBody('verify'), this.verify)
-        this.router.post('/forgot-password', this.validateBody('forgotPassword'), this.forgotPassword)
-        this.router.post('/confirm-password', this.validateBody('confirmPassword'), this.confirmPassword)
+        this.router.post('/signin', this.validateBody('signIn') as ValidationChain[], this.signIn)
+        this.router.post('/verify', this.validateBody('verify') as ValidationChain[], this.verify)
+        this.router.post('/signup', this.validateBody('signUp') as ValidationChain[], this.signUp)
+        this.router.post('/forgot-password', this.validateBody('forgotPassword') as ValidationChain[], this.forgotPassword)
+        this.router.post('/confirm-password', this.validateBody('confirmPassword') as ValidationChain[], this.confirmPassword)
     }
 
 
@@ -27,12 +33,12 @@ class AuthController {
             return res.status(422).json({ errors: result.array() });
         }
         console.log(req.body)
-        const { username, password, email, type, birthdate } = req.body;
+        const { name, username, password, email, type, birthdate } = req.body;
         let userAttr = [];
         userAttr.push({ Name: 'email', Value: email });
         userAttr.push({ Name: 'birthdate', Value: birthdate.toString() });
-        userAttr.push({ Name: 'username', Value: username });
-        userAttr.push({ Name: 'type', Value: type });
+        userAttr.push({ Name: 'name', Value: name });
+        userAttr.push({ Name: 'custom:type', Value: type });
 
 
         let cognitoService = new Cognito();
@@ -110,6 +116,7 @@ class AuthController {
             case 'signUp':
                 return [
                     body('username').notEmpty().isLength({ min: 5 }),
+                    body('name').notEmpty().isLength({ min: 5 }),
                     body('email').notEmpty().normalizeEmail().isEmail(),
                     body('password').isString().isLength({ min: 8 }),
                     body('birthdate').exists().isISO8601(),
