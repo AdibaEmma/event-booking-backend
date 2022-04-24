@@ -3,7 +3,7 @@ import { Request, Response, Router } from 'express'
 
 import { ddbClient } from "../db";
 import AuthMiddleware from '../middleware/auth.middleware';
-import { fetchProductById, handleError, eventSchema, attendeeSchema, headers } from '../handlers';
+import { fetchEventById, handleError, eventSchema, attendeeSchema, headers } from '../handlers';
 
 class EventController {
     private path: string = '/events'
@@ -48,7 +48,7 @@ class EventController {
 
             const id = req.params?.eventId as string
 
-            const updateBody = await fetchProductById(id)
+            const updateBody = await fetchEventById(id)
 
             const reqBody = JSON.parse(req.body as string);
 

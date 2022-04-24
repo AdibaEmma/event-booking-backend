@@ -66,51 +66,41 @@ functions:
           path: /events/{eventId}
           method: DELETE
 
-#   createUser:
-#     handler: src/handlers.createUser
-#     name: create-user
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /users
-#           method: POST
-#   getAllUsers:
-#     handler: src/handlers.getAllUsers
-#     name: get-all-users
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /users
-#           method: GET
-#   getUser:
-#     handler: src/handlers.getUser
-#     name: get-user
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /users/{userId}
-#           method: GET
-#   updateUser:
-#     handler: src/handlers.updateUser
-#     name: update-user
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /users/{userId}
-#           method: PUT
-#   deleteUser:
-#     handler: src/handlers.deleteUser
-#     name: delete-user
-#     memorySize: 128 # mb
-#     timeout: 5 # seconds
-#     events:
-#       - http:
-#           path: /users/{userId}
-#           method: DELETE
+  createUser:
+    handler: src/handlers.createUser
+    name: create-user
+    events:
+      - http:
+          path: /users/create
+          method: POST
+  getAllUsers:
+    handler: src/handlers.getAllUsers
+    name: get-all-users
+    events:
+      - http:
+          path: /users
+          method: GET
+  getUser:
+    handler: src/handlers.getUser
+    name: get-user
+    events:
+      - http:
+          path: /users/{userId}
+          method: GET
+  updateUser:
+    handler: src/handlers.updateUser
+    name: update-user
+    events:
+      - http:
+          path: /users/{userId}/update
+          method: PUT
+  deleteUser:
+    handler: src/handlers.deleteUser
+    name: delete-user
+    events:
+      - http:
+          path: /users/{userId}
+          method: DELETE
 
 plugins:
   - serverless-plugin-typescript

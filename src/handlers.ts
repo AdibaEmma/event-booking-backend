@@ -9,12 +9,19 @@ export const headers = {
 };
 
 const eventsTable = "EventsTable"
+const usersTable = "UsersTable"
 
 export const eventSchema = yup.object().shape({
     title: yup.string().required(),
     description: yup.string().required(),
     artist: yup.string().required(),
     attendees: yup.array().notRequired()
+});
+
+export const userSchema = yup.object().shape({
+    username: yup.string().required(),
+    bio: yup.string().required(),
+    dob: yup.string().required()
 });
 
 export const attendeeSchema = yup.object().shape({
@@ -53,7 +60,7 @@ export const bookEvent = async (event: APIGatewayProxyEvent): Promise<APIGateway
 
         const id = event.pathParameters?.eventId as string
 
-        const updateBody = await fetchProductById(id)
+        const updateBody = await fetchEventById(id)
 
         const reqBody = JSON.parse(event.body as string);
 
@@ -99,7 +106,7 @@ export const getAllEvents = async (event: APIGatewayProxyEvent): Promise<APIGate
 
 export const getEvent = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const eventItem = await fetchProductById(event.pathParameters?.eventId as string);
+        const eventItem = await fetchEventById(event.pathParameters?.eventId as string);
 
         return {
             statusCode: 200,
@@ -116,7 +123,7 @@ export const deleteEvent = async (event: APIGatewayProxyEvent): Promise<APIGatew
     try {
         const id = event.pathParameters?.eventId as string;
 
-        await fetchProductById(id);
+        await fetchEventById(id);
 
         await ddbClient
             .delete({
@@ -136,12 +143,141 @@ export const deleteEvent = async (event: APIGatewayProxyEvent): Promise<APIGatew
     }
 };
 
-export const fetchProductById = async (id: string) => {
+export const createUser = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const reqBody = JSON.parse(event.body as string);
+
+        await userSchema.validate(reqBody, { abortEarly: false });
+
+        const user = {
+            userId: v4(),
+            ...reqBody,
+        }
+        await ddbClient
+            .put({
+                TableName: usersTable,
+                Item: user,
+            })
+            .promise();
+        return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify(user),
+        };
+    } catch (err) {
+        return handleError(err)
+    }
+};
+
+export const getAllUsers = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const output = await ddbClient
+        .scan({
+            TableName: usersTable,
+        })
+        .promise();
+
+    return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(output.Items),
+    };
+};
+
+export const getUser = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const user = await fetchUserById(event.pathParameters?.userId as string);
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(user),
+        };
+    } catch (e) {
+        return handleError(e);
+    }
+};
+
+export const updateUser = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const id = event.pathParameters?.userId as string
+
+        await fetchUserById(id)
+
+        const reqBody = JSON.parse(event.body as string);
+
+        await userSchema.validate(reqBody, { abortEarly: false });
+
+
+
+        const updatedUser = {
+            ...reqBody,
+            userId: id
+        }
+        await ddbClient
+            .put({
+                TableName: usersTable,
+                Item: updatedUser,
+            })
+            .promise();
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(updatedUser),
+        }
+    } catch (err) {
+        return handleError(err)
+    }
+};
+
+export const deleteUser = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    try {
+        const id = event.pathParameters?.userId as string;
+
+        await fetchUserById(id);
+
+        await ddbClient
+            .delete({
+                TableName: usersTable,
+                Key: {
+                    userId: id,
+                },
+            })
+            .promise();
+
+        return {
+            statusCode: 204,
+            body: "",
+        };
+    } catch (e) {
+        return handleError(e);
+    }
+};
+
+
+export const fetchEventById = async (id: string) => {
     const output = await ddbClient
         .get({
             TableName: eventsTable,
             Key: {
                 eventId: id,
+            },
+        })
+        .promise();
+
+    if (!output.Item) {
+        throw new HttpError(404, { error: "not found" });
+    }
+
+    return output.Item;
+};
+
+export const fetchUserById = async (id: string) => {
+    const output = await ddbClient
+        .get({
+            TableName: usersTable,
+            Key: {
+                userid: id,
             },
         })
         .promise();
