@@ -44,7 +44,9 @@ class AuthController {
         let cognitoService = new Cognito();
         cognitoService.signUpUser(username, password, userAttr)
             .then(success => {
-                success ? res.status(200).end() : res.status(400).end()
+                success ? res.status(200).json({
+                    success
+                }) : res.status(400).end()
             })
     }
 
@@ -62,7 +64,12 @@ class AuthController {
         let cognitoService = new Cognito();
         cognitoService.signInUser(username, password)
             .then(success => {
-                success ? res.status(200).end() : res.status(400).end()
+                success ? res.status(200).json({
+                    message: "Signin successfull",
+                    body: success
+                }) : res.status(400).json({
+                    error: success
+                })
             })
     }
 
@@ -79,7 +86,9 @@ class AuthController {
         let cognitoService = new Cognito();
         cognitoService.confirmSignUp(username, code)
             .then(success => {
-                success ? res.status(200).end() : res.status(400).end()
+                success ? res.status(200).json({
+                    res
+                }) : res.status(400).end()
             })
     }
 

@@ -15,7 +15,7 @@ export default class Cognito {
         this.cognitoIdentity = new AWS.CognitoIdentityServiceProvider(this.config)
     }
 
-    public async signUpUser(username: string, password: string, userAttr: Array<any>): Promise<boolean> {
+    public async signUpUser(username: string, password: string, userAttr: Array<any>): Promise<any> {
 
         var params = {
             ClientId: this.clientId, /* required */
@@ -28,14 +28,14 @@ export default class Cognito {
         try {
             const data = await this.cognitoIdentity.signUp(params).promise()
             console.log(data)
-            return true
+            return data
         } catch (error) {
             console.log(error)
             return false
         }
     }
 
-    public async signInUser(username: string, password: string): Promise<boolean> {
+    public async signInUser(username: string, password: string): Promise<any> {
         var params = {
             AuthFlow: 'USER_PASSWORD_AUTH', /* required */
             ClientId: this.clientId, /* required */
@@ -49,10 +49,10 @@ export default class Cognito {
         try {
             let data = await this.cognitoIdentity.initiateAuth(params).promise();
             console.log(data);
-            return true;
+            return data;
         } catch (error) {
             console.log(error)
-            return false;
+            return error;
         }
     }
 

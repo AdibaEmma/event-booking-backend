@@ -3,7 +3,6 @@ import { Application } from 'express'
 
 import EventController from './controllers/events.controller'
 import AuthController from './controllers/auth.controller'
-import ProtectedController from './controllers/protected.controller';
 
 class App {
     public app: Application
@@ -41,7 +40,6 @@ const app = new App({
     controllers: [
         new EventController(),
         new AuthController(),
-        new ProtectedController()
     ],
     middleWares: [
         express.json(),

@@ -4,20 +4,20 @@ import * as yup from "yup";
 
 import { ddbClient } from "./db";
 
-const headers = {
+export const headers = {
     "content-type": "application/json",
 };
 
 const eventsTable = "EventsTable"
 
-const eventSchema = yup.object().shape({
+export const eventSchema = yup.object().shape({
     title: yup.string().required(),
     description: yup.string().required(),
     artist: yup.string().required(),
     attendees: yup.array().notRequired()
 });
 
-const attendeeSchema = yup.object().shape({
+export const attendeeSchema = yup.object().shape({
     username: yup.string().required()
 })
 
@@ -136,7 +136,7 @@ export const deleteEvent = async (event: APIGatewayProxyEvent): Promise<APIGatew
     }
 };
 
-const fetchProductById = async (id: string) => {
+export const fetchProductById = async (id: string) => {
     const output = await ddbClient
         .get({
             TableName: eventsTable,
@@ -159,7 +159,7 @@ class HttpError extends Error {
     }
 }
 
-const handleError = (err: unknown) => {
+export const handleError = (err: unknown) => {
     if (err instanceof yup.ValidationError) {
         return {
             statusCode: 400,

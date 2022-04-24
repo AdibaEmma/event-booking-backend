@@ -14,11 +14,11 @@ class AuthMiddleware {
     }
 
     public verifyToken(req: Request, res: Response, next: NextFunction): void {
-        const { token } = req.body;
+        const token  = req.header('Auth');
         console.log(token)
         if (!token) res.status(401).end();
 
-        let decodedJwt: any = jwt.decode(token, { complete: true });
+        let decodedJwt: any = jwt.decode(token as string, { complete: true });
         if (decodedJwt === null) {
             res.status(401).end()
             return
@@ -31,11 +31,13 @@ class AuthMiddleware {
             res.status(401).end()
             return
         }
-        jwt.verify(token, pem, function (err: any, payload: any) {
+        jwt.verify(token as string, pem, function (err: any, payload: any) {
             if (err) {
                 res.status(401).end()
                 return
             } else {
+                console.log(payload);
+                
                 next()
             }
         })
